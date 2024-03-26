@@ -1,24 +1,24 @@
-package com.onlinebanking.controller;
+package com.bank_management_system.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
+import com.bank_management_system.entity.Customer;
+import com.bank_management_system.repository.AccountDao;
+import com.bank_management_system.repository.CustomerDao;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.onlinebanking.dao.CustomerDao;
-import com.onlinebanking.model.Customer;
 
 @Controller
 public class CustomerController {
 	
 	@Autowired
 	private CustomerDao customerDao;
+
+	@Autowired
+	private AccountDao accountDao;
 	
 	@GetMapping("/")
 	public String gotToIndexPage() {
@@ -66,12 +66,21 @@ public class CustomerController {
 		}
 		
 		else {
-			mv.addObject("status", "Failed to login admin.");
-			mv.setViewName("registeruser");
+			mv.addObject("status", "Customer is not registered");
+			mv.setViewName("redirect:/customerregister");
 		}
 		
 		
 		return mv;
+	}
+
+	@RequestMapping(value = "/deleteUser", method = {RequestMethod.GET, RequestMethod.POST})
+	public String deleteAccount(@RequestParam("customerId") int id, HttpServletRequest request) {
+		customerDao.deleteById(id);
+		accountDao.delete(accountDao.findByCustomerId(id));
+		HttpSession session = request.getSession();
+		session.setAttribute("user-login",null);
+		return "redirect:/";
 	}
 	
 }

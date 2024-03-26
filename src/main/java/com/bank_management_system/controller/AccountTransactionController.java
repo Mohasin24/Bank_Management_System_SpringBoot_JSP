@@ -1,10 +1,13 @@
-package com.onlinebanking.controller;
+package com.bank_management_system.controller;
 
-import java.time.LocalDate;
-import java.util.Optional;
 
-import javax.servlet.http.HttpSession;
-
+import com.bank_management_system.entity.Account;
+import com.bank_management_system.entity.AccountTransaction;
+import com.bank_management_system.entity.Customer;
+import com.bank_management_system.repository.AccountDao;
+import com.bank_management_system.repository.AccountTransactionDao;
+import com.bank_management_system.utility.Constants;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,13 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.onlinebanking.dao.AccountDao;
-import com.onlinebanking.dao.AccountTransactionDao;
-import com.onlinebanking.model.Account;
-import com.onlinebanking.model.AccountTransaction;
-import com.onlinebanking.model.Customer;
-import com.onlinebanking.utility.Constants.AccountStatus;
-import com.onlinebanking.utility.Constants.TransactionType;
+import java.time.LocalDate;
+import java.util.Optional;
 
 @Controller
 public class AccountTransactionController {
@@ -51,7 +49,7 @@ public class AccountTransactionController {
 			account = o.get();
 		}
 		
-		if(account.getStatus().equals(AccountStatus.LOCK.value())) {
+		if(account.getStatus().equals(Constants.AccountStatus.LOCK.value())) {
 			mv.addObject("status", "Account is Locked, Please contact Bank Administrator!!!");
 			mv.setViewName("index");
 			return mv;
@@ -78,7 +76,7 @@ public class AccountTransactionController {
 			transaction.setAccountId(account.getId());
 			transaction.setAmount(amount);
 			transaction.setDate(LocalDate.now().toString());
-			transaction.setType(TransactionType.WITHDRAW.value());
+			transaction.setType(Constants.TransactionType.WITHDRAW.value());
 			
 			accountTransactionDao.save(transaction);
 			
@@ -101,7 +99,7 @@ public class AccountTransactionController {
 			account = o.get();
 		}
 		
-		if(account.getStatus().equals(AccountStatus.LOCK.value())) {
+		if(account.getStatus().equals(Constants.AccountStatus.LOCK.value())) {
 			mv.addObject("status", "Account is Locked, Please contact Bank Administrator!!!");
 			mv.setViewName("index");
 			return mv;
@@ -122,7 +120,7 @@ public class AccountTransactionController {
 			transaction.setAccountId(account.getId());
 			transaction.setAmount(amount);
 			transaction.setDate(LocalDate.now().toString());
-			transaction.setType(TransactionType.DEPOSIT.value());
+			transaction.setType(Constants.TransactionType.DEPOSIT.value());
 			
 			accountTransactionDao.save(transaction);
 			
@@ -132,87 +130,6 @@ public class AccountTransactionController {
 			
 		}
 	}
-	
-	@PostMapping("/accounttransfer")
-	public ModelAndView accountTransfer(@RequestParam("toCardNo") String toCardNo,@RequestParam("amount") double amount, @RequestParam("pin") int pin, HttpSession session) {
-		
-		ModelAndView mv = new ModelAndView();
-		
-		Customer customer = (Customer)session.getAttribute("active-user");
-		Account account = null;
-		Optional<Account> o = accountDao.findById(customer.getId());
-		if(o.isPresent()) {
-			account = o.get();
-		}
-		
-		if(account.getStatus().equals(AccountStatus.LOCK.value())) {
-			mv.addObject("status", "Account is Locked, Please contact Bank Administrator!!!");
-			mv.setViewName("index");
-			return mv;
-		}
-		
-		if(account.getStatus().equals(AccountStatus.LOCK.value())) {
-			mv.addObject("status", "Account is Locked, Please contact Bank Administrator!!!");
-			mv.setViewName("index");
-			return mv;
-		}
-		
-		Account toAccount = accountDao.findByCardNo(toCardNo);
-		
-		if(toAccount == null) {
-			mv.addObject("status", "Account to transfer is Invalid");
-			mv.setViewName("index");
-			return mv;
-		}
-		
-		if(pin != account.getPin()) {
-			mv.addObject("status", "Wrong Pin!");
-			mv.setViewName("index");
-			return mv;
-		}
-		
-		if(amount < 1) {
-			mv.addObject("status", "Amount should be greater than 0");
-			mv.setViewName("index");
-			return mv;
-		}
-		
-		if(account.getBalance() < amount) {
-			mv.addObject("status", "Insufficient Fund to Transfer!!!");
-			mv.setViewName("index");
-			return mv;
-		}
-		
-		else {
-			
-			
-			double balanceAmount = account.getBalance() - amount;
-			account.setBalance(balanceAmount);
-			accountDao.save(account);
-			
-			double recieverBalanceAmount = toAccount.getBalance() + amount;
-			toAccount.setBalance(recieverBalanceAmount);
-			accountDao.save(toAccount);
-			
-			AccountTransaction transaction = new AccountTransaction();
-			transaction.setAccountId(account.getId());
-			transaction.setAmount(amount);
-			transaction.setDate(LocalDate.now().toString());
-			transaction.setType(TransactionType.ACCOUNT_TRANSFER.value());
-			transaction.setToAccountId(toAccount.getId());
-			
-			accountTransactionDao.save(transaction);
-			
-			mv.addObject("status", "Amount transferred Successfull!!!");
-			mv.setViewName("index");
-			return mv;
-			
-		}
-	}
-	
-	@GetMapping("/accounttransfer")
-	public String goToAccountTransferPage() {
-		return "accounttransfer";
-	}
+
 	
 }

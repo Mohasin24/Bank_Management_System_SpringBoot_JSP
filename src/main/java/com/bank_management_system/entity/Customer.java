@@ -1,16 +1,13 @@
-package com.onlinebanking.model;
+package com.bank_management_system.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+
+import jakarta.persistence.*;
 
 @Entity
 public class Customer {
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	@Column(name="Id")
 	private int id;
 	
@@ -35,6 +32,38 @@ public class Customer {
 	private String emailId;
 	
 	private String date;
+
+	public Customer() {
+	}
+
+	public Customer(int branchId, String password, String firstName, String lastName, String dob, String gender, String presentAddress, String permentAddress, String phoneNumber, String emailId, String date) {
+		this.branchId = branchId;
+		this.password = password;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.dob = dob;
+		this.gender = gender;
+		this.presentAddress = presentAddress;
+		this.permentAddress = permentAddress;
+		this.phoneNumber = phoneNumber;
+		this.emailId = emailId;
+		this.date = date;
+	}
+
+	public Customer(int id, int branchId, String password, String firstName, String lastName, String dob, String gender, String presentAddress, String permentAddress, String phoneNumber, String emailId, String date) {
+		this.id = id;
+		this.branchId = branchId;
+		this.password = password;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.dob = dob;
+		this.gender = gender;
+		this.presentAddress = presentAddress;
+		this.permentAddress = permentAddress;
+		this.phoneNumber = phoneNumber;
+		this.emailId = emailId;
+		this.date = date;
+	}
 
 	public int getId() {
 		return id;
@@ -131,5 +160,22 @@ public class Customer {
 	public void setDate(String date) {
 		this.date = date;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "Customer{" +
+				"id=" + id +
+				", branchId=" + branchId +
+				", password='" + password + '\'' +
+				", firstName='" + firstName + '\'' +
+				", lastName='" + lastName + '\'' +
+				", dob='" + dob + '\'' +
+				", gender='" + gender + '\'' +
+				", presentAddress='" + presentAddress + '\'' +
+				", permentAddress='" + permentAddress + '\'' +
+				", phoneNumber='" + phoneNumber + '\'' +
+				", emailId='" + emailId + '\'' +
+				", date='" + date + '\'' +
+				'}';
+	}
 }

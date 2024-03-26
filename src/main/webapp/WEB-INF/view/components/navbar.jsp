@@ -1,6 +1,6 @@
-<%@ page import ="com.onlinebanking.model.*"%>
-    <%@ page import ="com.onlinebanking.dao.*"%>
-    <%@ page import ="com.onlinebanking.utility.*"%>
+<%@ page import ="com.bank_management_system.entity.*"%>
+    <%@ page import ="com.bank_management_system.repository.*"%>
+    <%@ page import ="com.bank_management_system.utility.*"%>
 <%@ page import ="org.springframework.context.ApplicationContext"%>
 <%@ page import ="org.springframework.web.context.support.WebApplicationContextUtils"%>
     <%@ page import ="java.sql.*"%>
@@ -19,15 +19,14 @@
   AccountDao accountDao = context.getBean(AccountDao.class);
   AccountTransactionDao accountTransactionDao = context.getBean(AccountTransactionDao.class);
   AdminDao adminDao = context.getBean(AdminDao.class);
-  
+  BranchDao branchDao =context.getBean(BranchDao.class);
   CustomerDao customerDao =context.getBean(CustomerDao.class);
- 
   
   Customer customer = null;
   Admin admin = null;
   Account account = null;
   
-  
+  Branch branch = null;
   if(userlogin != null && userlogin.equals("customer")) {
 	  customer = (Customer)session.getAttribute("active-user");
 	  
@@ -36,6 +35,10 @@
 		   account = o.get();
 	   }
 	  
+	   Optional<Branch> ob = branchDao.findById(customer.getBranchId());
+	   if(ob.isPresent()) {
+		   branch = ob.get();
+	   }
   }
   
   else if(userlogin != null && userlogin.equals("admin")) {
@@ -48,12 +51,12 @@
     <ul class="navbar-nav mr-auto">
        
     
-      <li class="nav-item active  ml-5" data-toggle="modal" data-target=".aboutusmodal">
+     <!--  <li class="nav-item active  ml-5" data-toggle="modal" data-target=".aboutusmodal">
         <a class="nav-link"><b><span class="text-color">About us</span></b><span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item active  ml-5" data-toggle="modal" data-target=".contactusmodal">
         <a class="nav-link text-color"><b><span class="text-color">Developers Contact</span></b></a>
-      </li>
+      </li> -->
     </ul>
    </div>
    
@@ -101,11 +104,9 @@
       <li class="nav-item active  ml-5">
         <a class="nav-link" href="addaccount"><b><span class="text-color">Add Account</span></b><span class="sr-only">(current)</span></a>
       </li>
-      
-    <!--  <li class="nav-item active  ml-5">
+    <li class="nav-item active  ml-5">
         <a class="nav-link" href="addbranch"><b><span class="text-color">Add Branch</span></b><span class="sr-only">(current)</span></a>
-      </li>
-      -->
+      </li> 
      
       <%
        }
@@ -119,11 +120,7 @@
       <li class="nav-item active  ml-5">
         <a class="nav-link" href="deposit"><b><span class="text-color">Deposit Amount</span></b><span class="sr-only">(current)</span></a>
       </li>
-      
-      <li class="nav-item active  ml-5">
-        <a class="nav-link" href="accounttransfer"><b><span class="text-color">Account Transfer</span></b><span class="sr-only">(current)</span></a>
-      </li>
-      
+
       <li class="nav-item active  ml-5" data-toggle="modal" data-target=".balancemodal">
         <a class="nav-link" href="#"><b><span class="text-color">Balance Check</span></b><span class="sr-only">(current)</span></a>
       </li>
@@ -135,7 +132,14 @@
       <li class="nav-item active  ml-5" data-toggle="modal" data-target=".history">
         <a class="nav-link" href="#"><b><span class="text-color">Transaction history</span></b><span class="sr-only">(current)</span></a>
       </li>
-  
+<%-- <!********************************************************************* --%>
+<li class="nav-item active ml-5">
+    <a class="nav-link" href="/deleteUser?customerId=<%= customer.getId() %>" onclick="return confirm('Are you sure you want to delete your account?');">
+        <b><span class="text-color">Delete Account</span></b><span class="sr-only">(current)</span>
+    </a>
+</li>
+
+<%-- ********************************************************************* --%>
         
       <%
        }
@@ -288,35 +292,18 @@
              Last Name :- <%=customer.getLastName() %><br>
              Mobile no :- <%= customer.getPhoneNumber() %><br>
              Email Id :- <%= customer.getEmailId() %><br>
-             Card No :- <%if(account != null) { %>     <%=account.getCardNo() %><%} else { %> <span style="color:red">Account not connected</span> <%} %><br>
+             Branch :- <%=branch.getName() %><br>
+             City :- <%=branch.getCity() %><br>
+
+             Account No :- <%if(account != null) { %>     <%=account.getAccountNo() %><%} else { %> <span style="color:red">Account not connected</span> <%} %><br>
              ATM pin : <%if(account != null) { %>     ****<%} else { %> <span style="color:red">Account not connected</span> <%} %><br>
-             Account Type : <%= account.getType() %><br>
+Account Type : <%= account != null ? account.getType() : "N/A" %><br>
+
             
              
-            <%--  <% 
-             Checkbook checkbook = checkbookDao.findByCustomerId(customer.getId());
             
-             if(checkbook == null) {
-             %>	
-            <a
-										href="requestCheckbook?customerId=<%=customer.getId()%>"><button
-												type="button" class="btn custom-bg-2 text-black custom-bg">Request Checkbook</button>
-									</a>
-            <%	 
-             }
-             
-             else {
-             %>
-                 Checkbook Status : <%= checkbook.getApprovalStatus() %><br>
-             <%	 
-             }
-             
-             %> --%>
-             <%if(account != null) { %>
-                 <a href="changepin">change pin</a>
-             <%
-             }
-             %>
+             <br>
+          
             
           </b>
           
@@ -356,7 +343,7 @@
       <th scope="col">Transaction Id</th>
       <th scope="col">Account No.</th>
       <th scope="col">Amount</th> 
-      <th scope="col">To Card No</th>
+      <th scope="col">To Account No</th>
       <th scope="col">Transaction Type</th>
       <th scope="col">Transaction Date</th>
     </tr>
@@ -375,12 +362,12 @@
   
     <tr class="text-center">
       <td class="mid-align"><%=accountTransaction.getId() %></td>
-      <td class="mid-align"><%=account.getCardNo() %></td>
+      <td class="mid-align"><%=account.getAccountNo() %></td>
       <td class="mid-align"><%=accountTransaction.getAmount() %></td>
       <%
-									if (account.getType().equals(Constants.TransactionType.ACCOUNT_TRANSFER.value())) {
+									if (account != null && account.getType().equals(Constants.TransactionType.ACCOUNT_TRANSFER.value())) {
 									%>
-									<td class="mid-align"><%=accountDao.findById(accountTransaction.getToAccountId()).get().getCardNo()%></td>
+									<td class="mid-align"><%=accountDao.findById(accountTransaction.getToAccountId()).get().getAccountNo()%></td>
 									<%
 									} else {
 									%>

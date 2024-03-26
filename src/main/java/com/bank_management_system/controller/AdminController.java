@@ -1,8 +1,9 @@
-package com.onlinebanking.controller;
+package com.bank_management_system.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
+import com.bank_management_system.entity.Admin;
+import com.bank_management_system.repository.AdminDao;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,9 +11,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.onlinebanking.dao.AdminDao;
-import com.onlinebanking.model.Admin;
 
 @Controller
 public class AdminController {
@@ -81,6 +79,10 @@ public class AdminController {
 		mv.addObject("status", "Logged out sucessfully!");
 		mv.setViewName("index");
 		return mv;
+	}
+	@GetMapping("/error")
+	public String errorMapping(){
+		return "errorpage";
 	}
 
 }

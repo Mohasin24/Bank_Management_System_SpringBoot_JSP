@@ -1,14 +1,8 @@
-package com.onlinebanking.utility;
+package com.bank_management_system.utility;
 
 import java.util.Random;
 public class OTP 
 {
-
-//	public static void main(String[] args)
-//	{
-//	    String otp= generateOTP(5);
-//      System.out.println("Generated OTP : "+otp);
-//	}
 
 	public static String generateOTP(int otpLength)
 	{

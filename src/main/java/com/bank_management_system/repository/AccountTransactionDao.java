@@ -1,13 +1,13 @@
-package com.onlinebanking.dao;
+package com.bank_management_system.repository;
 
-import java.util.List;
 
+import com.bank_management_system.entity.AccountTransaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.onlinebanking.model.AccountTransaction;
+import java.util.List;
 
 @Repository
 public interface AccountTransactionDao extends JpaRepository<AccountTransaction, Integer> {

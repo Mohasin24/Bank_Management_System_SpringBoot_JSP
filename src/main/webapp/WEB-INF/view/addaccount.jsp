@@ -31,10 +31,10 @@
 								</div>
 
 								<div class="col-md-6">
-									<label for="email">Card No</label> <input type="text"
+									<label for="accountNo">Account No</label> <input type="text"
 										class="form-control" id="username"
-										aria-describedby="emailHelp" name="cardNo"
-										placeholder="Enter card no.." required>
+										aria-describedby="emailHelp" name="accountNo"
+										placeholder="Enter account no.." required>
 								</div>
 							</div>
 
@@ -61,17 +61,11 @@
 								</div>
 							</div>
 
-
-
-							<%
-							String otpp = OTP.generateOTP(5);
-							%>
-
 							<div class="row mt-2">
 								<div class="col-md-6">
 									<label for="email">Atm Pin</label> <input type="text"
 										class="form-control" id="username"
-										aria-describedby="emailHelp" name="pin" value="<%=otpp%>"
+										aria-describedby="emailHelp" name="pin" value=""
 										required>
 								</div>
 
